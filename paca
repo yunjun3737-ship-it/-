@@ -1,0 +1,110 @@
+local plr = game.Players.LocalPlayer
+local rs = game:GetService("ReplicatedStorage")
+blobLoopT3 = false
+
+function loopPlayerBlobF3()
+    if not blobLoopT3 then return end
+    
+    if type(UpdateCurrentBlobman) == "function" then
+        pcall(UpdateCurrentBlobman)
+    end
+    
+    local currentProcessing = {}
+
+    local function processPlayer(player)
+        if not player or not player.Character then return false end
+
+        local character = player.Character
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        local head = character:FindFirstChild("Head")
+        
+        if not hrp or not head then return false end
+
+        local myChar = plr and plr.Character
+        local myHrp = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if not myHrp then return false end
+        local originCF = myHrp.CFrame
+
+        local tpRunning = true
+        task.spawn(function()
+            while tpRunning and blobLoopT3 do
+                if type(TP) == "function" then
+                    pcall(TP, player)
+                end
+                task.wait()
+            end
+        end)
+
+        while blobLoopT3 do
+            if not player or not player.Character or not player.Character:FindFirstChild("Head") then break end
+
+            pcall(function()
+                if rs and rs:FindFirstChild("GrabEvents") then
+                    rs.GrabEvents.SetNetworkOwner:FireServer(head, head.CFrame)
+                end
+            end)
+            
+            local localTag = head:FindFirstChild("PartOwner")
+            if localTag and localTag:IsA("StringValue") and localTag.Value == plr.Name then
+                break
+            end
+            task.wait()
+        end
+
+        tpRunning = false
+
+        if originCF then 
+            pcall(function()
+                if type(BACK) == "function" then
+                    BACK(originCF)
+                end
+            end)
+        end
+        return true
+    end
+
+    task.spawn(function()
+        while blobLoopT3 do
+            if type(playersInLoop2V) == "table" then
+                for _, name in ipairs(playersInLoop2V) do
+                    local player = game.Players:FindFirstChild(name)
+
+                    if player then
+                        local isWhitelisted = false
+                        if type(Whitelist) == "table" then
+                            isWhitelisted = table.find(Whitelist, player.Name) ~= nil
+                        end
+
+                        if not isWhitelisted then
+                            local canProcess = true
+                            if typeof(PPs) == "Instance" and PPs:FindFirstChild(name) then canProcess = false end
+                            if typeof(inv) == "Instance" and inv:FindFirstChild(name) then canProcess = false end
+                            
+                            if canProcess then
+                                local character = player.Character
+                                local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+                                if humanoid and humanoid.Health > 0 then
+                                    if not currentProcessing[player] then
+                                        currentProcessing[player] = true
+
+                                        task.spawn(function()
+                                            local success = processPlayer(player)
+                                            if success then
+                                                task.wait(2)
+                                            end
+                                            currentProcessing[player] = nil
+                                        end)
+                                    end
+                                else
+                                    currentProcessing[player] = nil
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.05)
+        end
+    end)
+end
